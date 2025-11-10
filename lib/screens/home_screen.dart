@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stoic_app/data/stoic_content_data.dart';
@@ -22,29 +20,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late final List<MapEntry<String, List<StoicContent>>> _sectionEntries;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    final grouped = _groupContentByCategory(stoicContentData);
-    _sectionEntries = grouped.entries.toList(growable: false);
+    _tabController = TabController(length: 5, vsync: this);
     // Ensure the home screen starts in light mode the first time it opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
       themeProvider.setLightMode();
     });
-  }
-
-  LinkedHashMap<String, List<StoicContent>> _groupContentByCategory(
-    List<StoicContent> content,
-  ) {
-    final grouped = LinkedHashMap<String, List<StoicContent>>();
-    for (final lesson in content) {
-      grouped.putIfAbsent(lesson.category, () => []).add(lesson);
-    }
-    return grouped;
   }
 
   @override
@@ -162,33 +147,37 @@ class _HomeScreenState extends State<HomeScreen>
                                       .copyWith(color: context.textPrimary),
                                 ),
                                 const SizedBox(height: 12),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(
-                                      color: context.dividerColor.withValues(
-                                        alpha: 0.3,
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                        color: context.dividerColor.withValues(
+                                          alpha: 0.3,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Buscar lección",
-                                      hintStyle: AppTextStyles.inputHint
-                                          .copyWith(
-                                            color: context.textSecondary,
-                                          ),
-                                      prefixIcon: Icon(
-                                        Icons.search,
-                                        color: context.textSecondary,
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        hintText: "Buscar lección",
+                                        hintStyle: AppTextStyles.inputHint
+                                            .copyWith(
+                                              color: context.textSecondary,
+                                            ),
+                                        prefixIcon: Icon(
+                                          Icons.search,
+                                          color: context.textSecondary,
+                                        ),
+                                        border: InputBorder.none,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
                                       ),
-                                      border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 12,
-                                          ),
                                     ),
                                   ),
                                 ),
@@ -202,75 +191,44 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const Divider(height: 1),
 
-                // Sections and Lessons list
+                // Lessons list (sin encabezados de sección)
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.only(top: 8, bottom: 20),
-                    itemCount: _sectionEntries.length,
-                    itemBuilder: (context, sectionIndex) {
-                      final section = _sectionEntries[sectionIndex];
-                      final lessons = section.value;
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    itemCount: stoicContentData.length,
+                    itemBuilder: (context, index) {
+                      final lesson = stoicContentData[index];
+                      final status = progressProvider.statusFor(
+                        lesson.id,
+                        fallback: lesson.status,
+                      );
+                      final isCompleted = status == LessonStatus.completed;
+                      final isFavorite = favoriteProvider.isFavorite(
+                        lesson.id,
+                        fallback: lesson.isFavorite,
+                      );
+                      final imagePath = isCompleted
+                          ? "assets/images/open_book.png"
+                          : "assets/images/close_book.png";
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Section title
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 16.0,
+                      return LessonListItem(
+                        title: lesson.title,
+                        subtitle: lesson.description,
+                        imagePath: imagePath,
+                        status: status,
+                        isFavorite: isFavorite,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  LessonDetailScreen(content: lesson),
                             ),
-                            child: Text(
-                              section.key.toUpperCase(),
-                              style: AppTextStyles.overlineStrong.copyWith(
-                                color: context.textSecondary,
-                              ),
-                            ),
-                          ),
-
-                          // Lessons in this section
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              children: lessons.map((lesson) {
-                                final status = progressProvider.statusFor(
-                                  lesson.id,
-                                  fallback: lesson.status,
-                                );
-                                final isCompleted =
-                                    status == LessonStatus.completed;
-                                final isFavorite = favoriteProvider.isFavorite(
-                                  lesson.id,
-                                  fallback: lesson.isFavorite,
-                                );
-                                final imagePath = isCompleted
-                                    ? "assets/images/open_book.png"
-                                    : "assets/images/close_book.png";
-
-                                return LessonListItem(
-                                  title: lesson.title,
-                                  subtitle: lesson.description,
-                                  imagePath: imagePath,
-                                  status: status,
-                                  isFavorite: isFavorite,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            LessonDetailScreen(content: lesson),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).toList(),
-                            ),
-                          ),
-
-                          // Spacing between sections
-                          if (sectionIndex < _sectionEntries.length - 1)
-                            const SizedBox(height: 16),
-                        ],
+                          );
+                        },
                       );
                     },
                   ),
@@ -325,7 +283,118 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
 
-          // Tab 4: Conversar IA
+          // Tab 4: Favoritos
+          SafeArea(
+            child: Column(
+              children: [
+                // Header section
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Favoritos",
+                        style: AppTextStyles.brandTitleSecondary.copyWith(
+                          color: context.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Tus lecciones guardadas",
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: context.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+
+                // Favoritos list
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      final favoriteLessons = stoicContentData.where((lesson) {
+                        return favoriteProvider.isFavorite(
+                          lesson.id,
+                          fallback: lesson.isFavorite,
+                        );
+                      }).toList();
+
+                      if (favoriteLessons.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.favorite_border,
+                                size: 64,
+                                color: context.textSecondary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "No hay favoritos",
+                                style: AppTextStyles.h3.copyWith(
+                                  color: context.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Agrega lecciones tocando el corazón",
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: context.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        itemCount: favoriteLessons.length,
+                        itemBuilder: (context, index) {
+                          final lesson = favoriteLessons[index];
+                          final status = progressProvider.statusFor(
+                            lesson.id,
+                            fallback: lesson.status,
+                          );
+                          final isCompleted = status == LessonStatus.completed;
+                          final imagePath = isCompleted
+                              ? "assets/images/open_book.png"
+                              : "assets/images/close_book.png";
+
+                          return LessonListItem(
+                            title: lesson.title,
+                            subtitle: lesson.description,
+                            imagePath: imagePath,
+                            status: status,
+                            isFavorite: true,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      LessonDetailScreen(content: lesson),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Tab 5: Conversar IA
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -368,6 +437,7 @@ class _HomeScreenState extends State<HomeScreen>
             Tab(icon: Icon(Icons.home), text: "Inicio"),
             Tab(icon: Icon(Icons.book_rounded), text: "Filósofos"),
             Tab(icon: Icon(Icons.school), text: "Glosario"),
+            Tab(icon: Icon(Icons.favorite), text: "Favoritos"),
             Tab(icon: Icon(Icons.auto_awesome), text: "Chat IA"),
           ],
         ),

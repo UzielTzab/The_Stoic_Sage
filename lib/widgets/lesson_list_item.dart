@@ -55,6 +55,13 @@ class LessonListItem extends StatelessWidget {
         : (isDarkMode
               ? context.textSecondary
               : Colors.black); // Negro en claro, gris en oscuro
+    final heartBackgroundColor = isFavorite
+        ? (isDarkMode ? AppColors.sabioAccent : Colors.grey.shade100)
+        : Colors.transparent;
+    final heartIconColor = isFavorite
+        ? (isDarkMode ? Colors.white : Colors.black)
+        : Colors.transparent;
+    final heartIcon = isFavorite ? Icons.favorite : Icons.favorite_border;
     return Container(
       margin: margin ?? const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -176,31 +183,35 @@ class LessonListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (isFavorite)
-                        Positioned(
-                          bottom: -6,
-                          left: -6,
-                          child: Container(
-                            width: 26,
-                            height: 26,
-                            decoration: BoxDecoration(
-                              color: AppColors.sabioAccent,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.12),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.favorite,
-                              color: AppColors.darkBackground,
-                              size: 14,
-                            ),
+                      Positioned(
+                        bottom: -6,
+                        left: -6,
+                        child: Container(
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: heartBackgroundColor,
+                            shape: BoxShape.circle,
+                            boxShadow: isFavorite
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.12,
+                                      ),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            heartIcon,
+                            color: heartIconColor,
+                            size: 14,
                           ),
                         ),
+                      ),
                     ],
                   ),
                 ],

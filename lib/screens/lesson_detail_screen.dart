@@ -119,6 +119,9 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
           ],
         ),
       ),
+
+      // ...existing code...
+      // ...existing code...
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           favoriteProvider.toggleFavorite(
@@ -126,16 +129,26 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
             fallback: widget.content.isFavorite,
           );
         },
-        backgroundColor: isFavorite
-            ? AppColors.sabioAccent
-            : context.cardBackground,
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? Colors
+                  .grey
+                  .shade100 // Fondo muy claro en modo claro
+            : AppColors.sabioAccent, // Fondo acentuado en modo oscuro
         heroTag: 'lesson-fav-${widget.content.id}',
         tooltip: isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos',
         child: Icon(
           isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: isFavorite ? AppColors.darkBackground : context.textPrimary,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors
+                    .black // Negro en modo claro (outline o relleno)
+              : (isFavorite
+                    ? Colors.white
+                    : context
+                          .textPrimary), // Blanco si favorito en dark, textPrimary si no
         ),
       ),
+      // ...existing code...
+      // ...existing code...
     );
   }
 
