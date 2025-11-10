@@ -20,11 +20,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late final TextEditingController _searchController;
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    _searchController = TextEditingController();
     // Ensure the home screen starts in light mode the first time it opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
@@ -34,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
+    _searchController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -43,6 +47,12 @@ class _HomeScreenState extends State<HomeScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final progressProvider = context.watch<LessonProgressProvider>();
     final favoriteProvider = context.watch<FavoriteLessonsProvider>();
+    final normalizedQuery = _searchQuery.trim().toLowerCase();
+    final filteredLessons = normalizedQuery.isEmpty
+        ? stoicContentData
+        : stoicContentData.where((lesson) {
+            return lesson.title.toLowerCase().contains(normalizedQuery);
+          }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -149,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 const SizedBox(height: 12),
                                 SizedBox(
                                   width:
-                                      MediaQuery.of(context).size.width * 0.5,
+                                      MediaQuery.of(context).size.width * 0.6,
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.transparent,
@@ -161,6 +171,13 @@ class _HomeScreenState extends State<HomeScreen>
                                       ),
                                     ),
                                     child: TextField(
+                                      controller: _searchController,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _searchQuery = value;
+                                        });
+                                      },
+                                      textInputAction: TextInputAction.search,
                                       decoration: InputDecoration(
                                         hintText: "Buscar lección",
                                         hintStyle: AppTextStyles.inputHint
@@ -171,6 +188,21 @@ class _HomeScreenState extends State<HomeScreen>
                                           Icons.search,
                                           color: context.textSecondary,
                                         ),
+                                        suffixIcon: _searchQuery.isNotEmpty
+                                            ? IconButton(
+                                                tooltip: 'Limpiar búsqueda',
+                                                icon: Icon(
+                                                  Icons.close,
+                                                  color: context.textSecondary,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _searchQuery = '';
+                                                    _searchController.clear();
+                                                  });
+                                                },
+                                              )
+                                            : null,
                                         border: InputBorder.none,
                                         contentPadding:
                                             const EdgeInsets.symmetric(
@@ -193,45 +225,74 @@ class _HomeScreenState extends State<HomeScreen>
 
                 // Lessons list (sin encabezados de sección)
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
-                    itemCount: stoicContentData.length,
-                    itemBuilder: (context, index) {
-                      final lesson = stoicContentData[index];
-                      final status = progressProvider.statusFor(
-                        lesson.id,
-                        fallback: lesson.status,
-                      );
-                      final isCompleted = status == LessonStatus.completed;
-                      final isFavorite = favoriteProvider.isFavorite(
-                        lesson.id,
-                        fallback: lesson.isFavorite,
-                      );
-                      final imagePath = isCompleted
-                          ? "assets/images/open_book.png"
-                          : "assets/images/close_book.png";
+                  child: filteredLessons.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color: context.textSecondary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "Sin coincidencias",
+                                style: AppTextStyles.h3.copyWith(
+                                  color: context.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Intenta con otro término o limpia la búsqueda",
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: context.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          itemCount: filteredLessons.length,
+                          itemBuilder: (context, index) {
+                            final lesson = filteredLessons[index];
+                            final status = progressProvider.statusFor(
+                              lesson.id,
+                              fallback: lesson.status,
+                            );
+                            final isCompleted =
+                                status == LessonStatus.completed;
+                            final isFavorite = favoriteProvider.isFavorite(
+                              lesson.id,
+                              fallback: lesson.isFavorite,
+                            );
+                            final imagePath = isCompleted
+                                ? "assets/images/open_book.png"
+                                : "assets/images/close_book.png";
 
-                      return LessonListItem(
-                        title: lesson.title,
-                        subtitle: lesson.description,
-                        imagePath: imagePath,
-                        status: status,
-                        isFavorite: isFavorite,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  LessonDetailScreen(content: lesson),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+                            return LessonListItem(
+                              title: lesson.title,
+                              subtitle: lesson.description,
+                              imagePath: imagePath,
+                              status: status,
+                              isFavorite: isFavorite,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        LessonDetailScreen(content: lesson),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                 ),
               ],
             ),
