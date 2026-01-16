@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stoic_app/data/stoic_content_data.dart';
 import 'package:stoic_app/models/stoic_content.dart';
 import 'package:stoic_app/providers/favorite_lessons_provider.dart';
 import 'package:stoic_app/providers/lesson_progress_provider.dart';
+import 'package:stoic_app/providers/stoic_content_provider.dart';
 import 'package:stoic_app/providers/theme_provider.dart';
 import 'package:stoic_app/theme/app_text_styles.dart';
 import 'package:stoic_app/theme/app_colors.dart';
@@ -47,12 +47,9 @@ class _HomeScreenState extends State<HomeScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final progressProvider = context.watch<LessonProgressProvider>();
     final favoriteProvider = context.watch<FavoriteLessonsProvider>();
-    final normalizedQuery = _searchQuery.trim().toLowerCase();
-    final filteredLessons = normalizedQuery.isEmpty
-        ? stoicContentData
-        : stoicContentData.where((lesson) {
-            return lesson.title.toLowerCase().contains(normalizedQuery);
-          }).toList();
+    final contentProvider = context.watch<StoicContentProvider>();
+
+    final filteredLessons = contentProvider.searchLessons(_searchQuery);
 
     return Scaffold(
       appBar: AppBar(
@@ -376,7 +373,12 @@ class _HomeScreenState extends State<HomeScreen>
                 Expanded(
                   child: Builder(
                     builder: (context) {
-                      final favoriteLessons = stoicContentData.where((lesson) {
+                      final contentProvider = Provider.of<StoicContentProvider>(
+                        context,
+                      );
+                      final favoriteLessons = contentProvider.lessons.where((
+                        lesson,
+                      ) {
                         return favoriteProvider.isFavorite(
                           lesson.id,
                           fallback: lesson.isFavorite,
@@ -473,6 +475,23 @@ class _HomeScreenState extends State<HomeScreen>
                     color: context.textSecondary,
                   ),
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/chat');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text(
+                    'Abrir Chat',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),

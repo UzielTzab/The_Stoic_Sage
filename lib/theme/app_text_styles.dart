@@ -8,8 +8,10 @@ class AppTextStyles {
 
   // ============= CONFIGURACIÓN BASE =============
   static const String _fontFamily =
-      'SF Pro Display'; // Puedes cambiar la fuente aquí
-  static const String _fontFamilySecondary = 'SF Pro Text';
+      'SF Pro Display'; // Primary display font (default)
+  static const String _fontFamilyDisplay =
+      'Playfair Display'; // New Figma display font (change to actual asset name)
+  static const String _fontFamilySecondary = '';
 
   // ============= HEADINGS =============
   static const TextStyle h1 = TextStyle(
@@ -21,7 +23,7 @@ class AppTextStyles {
   );
 
   static const TextStyle brandTitlePrimary = TextStyle(
-    fontFamily: _fontFamily,
+    fontFamily: _fontFamilyDisplay,
     fontSize: 32,
     fontWeight: FontWeight.w800,
     letterSpacing: 0.5,
@@ -29,7 +31,7 @@ class AppTextStyles {
   );
 
   static const TextStyle brandTitleSecondary = TextStyle(
-    fontFamily: _fontFamily,
+    fontFamily: _fontFamilyDisplay,
     fontSize: 32,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.5,
@@ -267,7 +269,7 @@ class AppTextStyles {
   );
 
   static const TextStyle lessonDetailTitle = TextStyle(
-    fontFamily: _fontFamily,
+    fontFamily: _fontFamilyDisplay,
     fontSize: 30,
     fontWeight: FontWeight.w700,
     letterSpacing: -0.2,
@@ -303,7 +305,7 @@ class AppTextStyles {
   );
 
   static const TextStyle lessonTitle = TextStyle(
-    fontFamily: _fontFamily,
+    fontFamily: _fontFamilyDisplay,
     fontSize: 20,
     fontWeight: FontWeight.w700, // Bold
     letterSpacing: -0.1,
@@ -311,7 +313,7 @@ class AppTextStyles {
   );
 
   static const TextStyle lessonSubtitle = TextStyle(
-    fontFamily: _fontFamilySecondary,
+    fontFamily: _fontFamilyDisplay,
     fontSize: 14,
     fontWeight: FontWeight.w400, // Regular
     letterSpacing: 0.1,

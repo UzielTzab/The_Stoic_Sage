@@ -1,7 +1,7 @@
 name: stoic_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 2.0.0+2
+version: 2.0.0+3
 
 environment:
   sdk: ^3.8.1
@@ -32,3 +32,11 @@ flutter:
   # Assets (imágenes, fuentes, etc.)
   assets:
     - assets/images/
+    - assets/data/stoic_content.json
+    - assets/data/chat_responses.json
+  fonts:
+    - family: Playfair Display
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay-Regular.ttf
+        - asset: assets/fonts/PlayfairDisplay-Bold.ttf
+          weight: 700

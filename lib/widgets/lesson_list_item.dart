@@ -86,7 +86,7 @@ class LessonListItem extends StatelessWidget {
                       // Título
                       Text(
                         title,
-                        style: AppTextStyles.bodyMediumPlus.copyWith(
+                        style: AppTextStyles.lessonTitle.copyWith(
                           color: context.textPrimary,
                         ),
                       ),
@@ -96,7 +96,7 @@ class LessonListItem extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           subtitle!,
-                          style: AppTextStyles.bodySmall.copyWith(
+                          style: AppTextStyles.lessonSubtitle.copyWith(
                             color: context.textSecondary,
                           ),
                         ),

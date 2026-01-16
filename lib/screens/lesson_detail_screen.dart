@@ -18,7 +18,11 @@ class LessonDetailScreen extends StatefulWidget {
   State<LessonDetailScreen> createState() => _LessonDetailScreenState();
 }
 
+enum FontSizeOption { small, medium, large }
+
 class _LessonDetailScreenState extends State<LessonDetailScreen> {
+  FontSizeOption _fontSize = FontSizeOption.medium;
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +52,17 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
     final textPrimary = context.textPrimary;
     final textSecondary = context.textSecondary;
 
+    double getFontSize() {
+      switch (_fontSize) {
+        case FontSizeOption.small:
+          return 14.0;
+        case FontSizeOption.medium:
+          return 17.0;
+        case FontSizeOption.large:
+          return 22.0;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -57,6 +72,12 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
             _LessonDetailAppBar(
               content: widget.content,
               isCompleted: isCompleted,
+              fontSize: _fontSize,
+              onFontSizeChanged: (FontSizeOption newSize) {
+                setState(() {
+                  _fontSize = newSize;
+                });
+              },
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -109,7 +130,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                     MarkdownBody(
                       data: widget.content.content,
                       selectable: true,
-                      styleSheet: _buildMarkdownStyle(context),
+                      styleSheet: _buildMarkdownStyle(context, getFontSize()),
                     ),
                     const SizedBox(height: 80),
                   ],
@@ -120,8 +141,6 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
         ),
       ),
 
-      // ...existing code...
-      // ...existing code...
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           favoriteProvider.toggleFavorite(
@@ -130,59 +149,68 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
           );
         },
         backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Colors
-                  .grey
-                  .shade100 // Fondo muy claro en modo claro
-            : AppColors.sabioAccent, // Fondo acentuado en modo oscuro
+            ? Colors.grey.shade100
+            : AppColors.sabioAccent,
         heroTag: 'lesson-fav-${widget.content.id}',
         tooltip: isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos',
         child: Icon(
           isFavorite ? Icons.favorite : Icons.favorite_border,
           color: Theme.of(context).brightness == Brightness.light
-              ? Colors
-                    .black // Negro en modo claro (outline o relleno)
-              : (isFavorite
-                    ? Colors.white
-                    : context
-                          .textPrimary), // Blanco si favorito en dark, textPrimary si no
-        ),
-      ),
-      // ...existing code...
-      // ...existing code...
-    );
-  }
-
-  MarkdownStyleSheet _buildMarkdownStyle(BuildContext context) {
-    final textPrimary = context.textPrimary;
-    final textSecondary = context.textSecondary;
-
-    return MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
-      p: AppTextStyles.bodyMediumPlus.copyWith(color: textPrimary),
-      h2: AppTextStyles.h4.copyWith(color: textPrimary),
-      h3: AppTextStyles.bodyLargeBold.copyWith(color: textPrimary),
-      blockSpacing: 20,
-      listBullet: AppTextStyles.bodyMediumPlus.copyWith(color: textPrimary),
-      listIndent: 24,
-      blockquote: AppTextStyles.brandSubtitleItalic.copyWith(
-        color: textSecondary,
-      ),
-      blockquoteDecoration: BoxDecoration(
-        border: Border(
-          left: BorderSide(
-            color: AppColors.sabioAccent.withValues(alpha: 0.4),
-            width: 3,
-          ),
+              ? Colors.black
+              : (isFavorite ? Colors.white : context.textPrimary),
         ),
       ),
     );
   }
 }
 
+MarkdownStyleSheet _buildMarkdownStyle(BuildContext context, double fontSize) {
+  final textPrimary = context.textPrimary;
+  final textSecondary = context.textSecondary;
+
+  return MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+    p: AppTextStyles.bodyMediumPlus.copyWith(
+      color: textPrimary,
+      fontSize: fontSize,
+    ),
+    h2: AppTextStyles.h4.copyWith(color: textPrimary, fontSize: fontSize + 4),
+    h3: AppTextStyles.bodyLargeBold.copyWith(
+      color: textPrimary,
+      fontSize: fontSize + 2,
+    ),
+    blockSpacing: 20,
+    listBullet: AppTextStyles.bodyMediumPlus.copyWith(
+      color: textPrimary,
+      fontSize: fontSize,
+    ),
+    listIndent: 24,
+    blockquote: AppTextStyles.brandSubtitleItalic.copyWith(
+      color: textSecondary,
+      fontSize: fontSize,
+    ),
+    blockquoteDecoration: BoxDecoration(
+      border: Border(
+        left: BorderSide(
+          color: AppColors.sabioAccent.withValues(alpha: 0.4),
+          width: 3,
+        ),
+      ),
+    ),
+  );
+}
+
 class _LessonDetailAppBar extends StatelessWidget {
   final StoicContent content;
   final bool isCompleted;
+  final FontSizeOption fontSize;
+  final ValueChanged<FontSizeOption> onFontSizeChanged;
 
-  const _LessonDetailAppBar({required this.content, required this.isCompleted});
+  const _LessonDetailAppBar({
+    required this.content,
+    required this.isCompleted,
+    required this.fontSize,
+    required this.onFontSizeChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -223,10 +251,60 @@ class _LessonDetailAppBar extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            tooltip: 'Opciones de lectura',
-            onPressed: () {},
+          PopupMenuButton<FontSizeOption>(
+            tooltip: 'Tamaño de fuente',
             icon: Icon(Icons.tune_rounded, color: textPrimary),
+            onSelected: onFontSizeChanged,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: FontSizeOption.small,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.text_fields,
+                      size: 18,
+                      color: fontSize == FontSizeOption.small
+                          ? Theme.of(context).colorScheme.secondary
+                          : null,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Pequeño'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: FontSizeOption.medium,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.text_fields,
+                      size: 22,
+                      color: fontSize == FontSizeOption.medium
+                          ? Theme.of(context).colorScheme.secondary
+                          : null,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Mediano'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: FontSizeOption.large,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.text_fields,
+                      size: 28,
+                      color: fontSize == FontSizeOption.large
+                          ? Theme.of(context).colorScheme.secondary
+                          : null,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Grande'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
