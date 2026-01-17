@@ -43,18 +43,13 @@ class LessonListItem extends StatelessWidget {
     final isCompleted = status == LessonStatus.completed;
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final successColor = isDarkMode
-        ? AppColors.darkSuccess
-        : AppColors.lightSuccess;
-    final pendingColor = context.dividerColor;
-    final statusBackground = isCompleted
-        ? successColor.withOpacity(0.18)
-        : pendingColor.withOpacity(1);
-    final statusTextColor = isCompleted
-        ? (isDarkMode ? Colors.white : Colors.black)
-        : (isDarkMode
-              ? context.textSecondary
-              : Colors.black); // Negro en claro, gris en oscuro
+    final accent = isCompleted
+        ? const Color(0xFF4CAF50)
+        : AppColors.sabioAccent;
+    final statusLabel = isCompleted ? 'Completado' : 'En progreso';
+    final statusIcon = isCompleted
+        ? Icons.check_circle_outline
+        : Icons.timelapse;
     final heartBackgroundColor = isFavorite
         ? (isDarkMode ? AppColors.sabioAccent : Colors.grey.shade100)
         : Colors.transparent;
@@ -103,19 +98,22 @@ class LessonListItem extends StatelessWidget {
                       ],
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: statusBackground,
-                          borderRadius: BorderRadius.circular(12),
+                          color: accent.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: accent.withValues(alpha: 0.4)),
                         ),
-                        child: Text(
-                          status.label,
-                          style: AppTextStyles.captionBold.copyWith(
-                            color: statusTextColor,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(statusIcon, size: 18, color: accent),
+                            const SizedBox(width: 6),
+                            Text(
+                              statusLabel,
+                              style: AppTextStyles.bodySmallBold.copyWith(color: accent),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -160,29 +158,7 @@ class LessonListItem extends StatelessWidget {
                         ),
                       ),
 
-                      Positioned(
-                        top: 1,
-                        right: 1,
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: isCompleted
-                                ? successColor
-                                : statusBackground,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            color: AppColors.darkBackground,
-                            size: 14,
-                          ),
-                        ),
-                      ),
+                      // Corazón de favoritos
                       Positioned(
                         bottom: -6,
                         left: -6,

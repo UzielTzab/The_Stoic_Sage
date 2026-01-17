@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stoic_app/models/stoic_content.dart';
 import 'package:stoic_app/providers/favorite_lessons_provider.dart';
 import 'package:stoic_app/providers/lesson_progress_provider.dart';
+import 'package:stoic_app/providers/philosophers_provider.dart';
 import 'package:stoic_app/providers/stoic_content_provider.dart';
 import 'package:stoic_app/providers/theme_provider.dart';
 import 'package:stoic_app/theme/app_text_styles.dart';
@@ -296,23 +297,172 @@ class _HomeScreenState extends State<HomeScreen>
           ),
 
           // Tab 2: Filósofos
-          Center(
+          SafeArea(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.psychology, size: 64, color: context.textSecondary),
-                const SizedBox(height: 16),
-                Text(
-                  "Filósofos",
-                  style: AppTextStyles.h3.copyWith(color: context.textPrimary),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Explora las enseñanzas de los grandes maestros",
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: context.textSecondary,
+                // Header section
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Filósofos",
+                        style: AppTextStyles.h1.copyWith(
+                          color: context.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: context.dividerColor.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            textInputAction: TextInputAction.search,
+                            decoration: InputDecoration(
+                              hintText: "Buscar filósofo",
+                              hintStyle: AppTextStyles.inputHint.copyWith(
+                                color: context.textSecondary,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: context.textSecondary,
+                              ),
+                              suffixIcon: _searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      tooltip: 'Limpiar búsqueda',
+                                      icon: Icon(
+                                        Icons.close,
+                                        color: context.textSecondary,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _searchQuery = '';
+                                          _searchController.clear();
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
+                ),
+                const Divider(height: 1),
+
+                // Philosophers list
+                Expanded(
+                  child: Consumer<PhilosophersProvider>(
+                    builder: (context, philosophersProvider, child) {
+                      if (philosophersProvider.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (philosophersProvider.error != null) {
+                        return Center(
+                          child: Text(
+                            'Error: ${philosophersProvider.error}',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: context.textSecondary,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final filteredPhilosophers =
+                          philosophersProvider.searchPhilosophers(_searchQuery);
+
+                      if (filteredPhilosophers.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color: context.textSecondary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "Sin coincidencias",
+                                style: AppTextStyles.h3.copyWith(
+                                  color: context.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Intenta con otro término o limpia la búsqueda",
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: context.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        itemCount: filteredPhilosophers.length,
+                        itemBuilder: (context, index) {
+                          final philosopher = filteredPhilosophers[index];
+                          final status = progressProvider.statusFor(
+                            philosopher.id,
+                            fallback: philosopher.status,
+                          );
+                          final isCompleted = status == LessonStatus.completed;
+                          final imagePath = isCompleted
+                              ? "assets/images/open_book.png"
+                              : "assets/images/close_book.png";
+
+                          return LessonListItem(
+                            title: philosopher.title,
+                            subtitle: philosopher.description,
+                            imagePath: imagePath,
+                            status: status,
+                            isFavorite: false, // Philosophers don't have favorites for now
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => LessonDetailScreen(
+                                    content: philosopher,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

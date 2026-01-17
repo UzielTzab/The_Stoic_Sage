@@ -29,6 +29,32 @@ class StoicContentLoader {
     }
   }
 
+  static Future<List<StoicContent>> loadPhilosophers() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+        'assets/data/stoic_content.json',
+      );
+      final jsonData = json.decode(jsonString) as Map<String, dynamic>;
+      final philosophers = jsonData['philosophers'] as List<dynamic>;
+
+      return philosophers
+          .map(
+            (philosopher) => StoicContent(
+              id: philosopher['id'] as String,
+              title: philosopher['title'] as String,
+              description: philosopher['description'] as String,
+              category: philosopher['category'] as String,
+              status: _parseStatus(philosopher['status'] as String?),
+              content: philosopher['content'] as String,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      print('Error loading philosophers: $e');
+      return [];
+    }
+  }
+
   static LessonStatus _parseStatus(String? statusString) {
     switch (statusString) {
       case 'completed':

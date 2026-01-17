@@ -90,7 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     }
     // Respuesta por defecto
-    return '🤔 Interesante pregunta. Puedo ayudarte mejor si preguntas sobre:\n• Conceptos estoicos\n• Filósofos antiguos\n• Práctica diaria\n\nEscribe "ayuda" para ver más temas.';
+    return '🤔 Interesante pregunta. Puedo ayudarte mejor si preguntas sobre:\n• Conceptos estoicos\n• Filósofos (Zenón, Epicteto, Marco Aurelio, Séneca, Crisipo, Aristóteles)\n• Práctica diaria\n\nEscribe "ayuda" para ver más temas.';
   }
 
   @override
@@ -126,11 +126,23 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           child: Row(
             children: [
+              // Back button
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: isDark ? Colors.white : const Color(0xFF232323),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 8),
               // Mentor avatar
               CircleAvatar(
                 radius: 22,
                 backgroundColor: Colors.transparent,
-                backgroundImage: AssetImage('assets/images/base_rose.png'),
+                backgroundImage: AssetImage('assets/images/mentor_avatar.png'),
               ),
               const SizedBox(width: 12),
               // Mentor info

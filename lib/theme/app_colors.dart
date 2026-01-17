@@ -114,12 +114,10 @@ class AppColors {
     primary: lightPrimary,
     secondary: lightSecondary,
     surface: lightSurface,
-    background: lightBackground,
     error: lightError,
     onPrimary: lightOnPrimary,
     onSecondary: lightOnSecondary,
     onSurface: lightOnSurface,
-    onBackground: lightOnBackground,
     onError: lightOnPrimary,
   );
 
@@ -128,12 +126,10 @@ class AppColors {
     primary: darkPrimary,
     secondary: darkSecondary,
     surface: darkSurface,
-    background: darkBackground,
     error: darkError,
     onPrimary: darkOnPrimary,
     onSecondary: darkOnSecondary,
     onSurface: darkOnSurface,
-    onBackground: darkOnBackground,
     onError: darkOnPrimary,
   );
 }
