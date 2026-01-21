@@ -34,6 +34,8 @@ flutter:
     - assets/images/
     - assets/data/stoic_content.json
     - assets/data/chat_responses.json
+    - assets/data/stoic_glossary.json
+
   fonts:
     - family: Playfair Display
       fonts:

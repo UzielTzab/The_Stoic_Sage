@@ -1,0 +1,160 @@
+{
+  "glossary": [
+    {
+      "term": "Apatheia",
+      "definition": "Estado de tranquilidad del alma, libertad de las pasiones destructivas. No significa ausencia total de emociones, sino control sobre las reacciones irracionales.",
+      "category": "Estados mentales",
+      "related_terms": ["ataraxia", "paz interior", "autocontrol"]
+    },
+    {
+      "term": "Arête",
+      "definition": "Excelencia o virtud. Para los estoicos, es el bien supremo y el objetivo de la vida humana. Se logra viviendo de acuerdo con la razón y la naturaleza.",
+      "category": "Virtudes",
+      "related_terms": ["virtud", "excelencia", "bien supremo"]
+    },
+    {
+      "term": "Ataraxia",
+      "definition": "Tranquilidad perfecta del alma, ausencia de perturbación. Estado de paz interior que se alcanza cuando se vive en armonía con la naturaleza.",
+      "category": "Estados mentales",
+      "related_terms": ["apatheia", "serenidad", "paz interior"]
+    },
+    {
+      "term": "Autarquía",
+      "definition": "Autosuficiencia o independencia. La capacidad de ser feliz y completo por uno mismo, sin depender excesivamente de cosas externas.",
+      "category": "Estados mentales",
+      "related_terms": ["independencia", "autosuficiencia", "libertad interior"]
+    },
+    {
+      "term": "Coraje",
+      "definition": "Una de las cuatro virtudes cardinales del estoicismo. No solo valentía física, sino también moral: enfrentar la verdad, admitir errores y perseverar en la virtud.",
+      "category": "Virtudes",
+      "related_terms": ["valentía", "virtudes", "templanza", "justicia", "sabiduría"]
+    },
+    {
+      "term": "Cosmos",
+      "definition": "El universo ordenado y racional. Los estoicos creían que el cosmos está vivo, inteligente y gobernado por el logos divino.",
+      "category": "Conceptos metafísicos",
+      "related_terms": ["logos", "universo", "naturaleza", "providencia"]
+    },
+    {
+      "term": "Dicotomía del control",
+      "definition": "Distinción fundamental entre lo que está bajo nuestro control (nuestras opiniones, acciones y reacciones) y lo que no está bajo nuestro control (eventos externos, opiniones de otros).",
+      "category": "Principios prácticos",
+      "related_terms": ["control", "aceptación", "resiliencia"]
+    },
+    {
+      "term": "Eudaimonia",
+      "definition": "Bienestar o felicidad verdadera. Para los estoicos, se alcanza viviendo virtuosamente y en armonía con la naturaleza, no a través del placer o la riqueza.",
+      "category": "Estados mentales",
+      "related_terms": ["felicidad", "bienestar", "virtud"]
+    },
+    {
+      "term": "Heimarmene",
+      "definition": "El destino o providencia divina. Los estoicos creían que todo sucede por una razón dentro del orden cósmico, aunque podemos elegir cómo responder.",
+      "category": "Conceptos metafísicos",
+      "related_terms": ["destino", "providencia", "logos"]
+    },
+    {
+      "term": "Indiferentes",
+      "definition": "Cosas que no son ni buenas ni malas por naturaleza (riqueza, salud, reputación). Los estoicos las llamaban 'indiferentes preferidos' cuando son beneficiosas.",
+      "category": "Categorías éticas",
+      "related_terms": ["indiferentes preferidos", "virtud", "vicio"]
+    },
+    {
+      "term": "Justicia",
+      "definition": "Una de las cuatro virtudes cardinales. Significa tratar a todos los seres humanos con equidad y respeto, reconociendo nuestra interconexión en el cosmos.",
+      "category": "Virtudes",
+      "related_terms": ["equidad", "virtudes", "coraje", "templanza", "sabiduría"]
+    },
+    {
+      "term": "Logos",
+      "definition": "La razón divina que gobierna el universo. Principio racional e inteligente que ordena todas las cosas. En los humanos, es la capacidad de razonar y vivir virtuosamente.",
+      "category": "Conceptos metafísicos",
+      "related_terms": ["razón", "logos divino", "naturaleza", "cosmos"]
+    },
+    {
+      "term": "Memento Mori",
+      "definition": "Recuerda que vas a morir. Práctica estoica de recordar la mortalidad para vivir con más intención, apreciar el presente y mantener la perspectiva.",
+      "category": "Prácticas",
+      "related_terms": ["mortalidad", "perspectiva", "vida examinada"]
+    },
+    {
+      "term": "Oikeiosis",
+      "definition": "Apropiación o reconocimiento de lo propio. Proceso por el cual desarrollamos preocupación por nosotros mismos, luego por otros, y finalmente por toda la humanidad.",
+      "category": "Psicología",
+      "related_terms": ["empatía", "comunidad", "humanidad"]
+    },
+    {
+      "term": "Páthos",
+      "definition": "Pasión o emoción irracional. Los estoicos distinguían entre emociones naturales (eupáthē) y pasiones destructivas (páthē) que deben ser controladas.",
+      "category": "Emociones",
+      "related_terms": ["emociones", "pasiones", "apatheia"]
+    },
+    {
+      "term": "Phantasia",
+      "definition": "Impresión o representación mental. Los estoicos enseñaban que no somos perturbados por las cosas mismas, sino por nuestras interpretaciones (phantasiai) de ellas.",
+      "category": "Psicología",
+      "related_terms": ["percepción", "interpretación", "juicio"]
+    },
+    {
+      "term": "Phronesis",
+      "definition": "Sabiduría práctica o prudencia. La capacidad de discernir lo correcto en cada situación y actuar apropiadamente.",
+      "category": "Virtudes",
+      "related_terms": ["sabiduría", "prudencia", "razón práctica"]
+    },
+    {
+      "term": "Premeditatio Malorum",
+      "definition": "Premeditación de males. Práctica de visualizar dificultades y pérdidas para prepararse emocionalmente y reducir el miedo a lo desconocido.",
+      "category": "Prácticas",
+      "related_terms": ["visualización", "resiliencia", "preparación"]
+    },
+    {
+      "term": "Prohairesis",
+      "definition": "Elección racional o facultad de elección. El aspecto racional del alma que elige entre diferentes cursos de acción basados en la virtud.",
+      "category": "Psicología",
+      "related_terms": ["elección", "voluntad", "razón"]
+    },
+    {
+      "term": "Prokopē",
+      "definition": "Progreso filosófico. El desarrollo gradual hacia la sabiduría y la virtud a través de la práctica constante.",
+      "category": "Desarrollo personal",
+      "related_terms": ["progreso", "desarrollo", "práctica"]
+    },
+    {
+      "term": "Pronoia",
+      "definition": "Providencia divina. La creencia de que el universo está ordenado racionalmente y que todo sucede por una razón benévola.",
+      "category": "Conceptos metafísicos",
+      "related_terms": ["providencia", "logos", "destino"]
+    },
+    {
+      "term": "Sabiduría",
+      "definition": "Una de las cuatro virtudes cardinales. Capacidad de distinguir lo bueno de lo malo, lo verdadero de lo falso, y actuar en consecuencia.",
+      "category": "Virtudes",
+      "related_terms": ["virtudes", "conocimiento", "discernimiento"]
+    },
+    {
+      "term": "Sofrosine",
+      "definition": "Templanza o moderación. Control sobre los deseos y apetitos, manteniendo el equilibrio en todas las cosas.",
+      "category": "Virtudes",
+      "related_terms": ["templanza", "moderación", "autocontrol"]
+    },
+    {
+      "term": "Sympatheia",
+      "definition": "Simpatía cósmica. La interconexión de todas las cosas en el universo, donde cada parte afecta al todo.",
+      "category": "Conceptos metafísicos",
+      "related_terms": ["interconexión", "unidad", "cosmos"]
+    },
+    {
+      "term": "Téleos",
+      "definition": "Perfección o completitud. El estado de haber alcanzado la virtud plena y vivir en armonía completa con la naturaleza.",
+      "category": "Estados mentales",
+      "related_terms": ["perfección", "completitud", "virtud"]
+    },
+    {
+      "term": "Virtud",
+      "definition": "Excelencia moral. Para los estoicos, la virtud es el único bien verdadero y se manifiesta en las cuatro virtudes cardinales: sabiduría, justicia, coraje y templanza.",
+      "category": "Virtudes",
+      "related_terms": ["arête", "excelencia", "bien supremo"]
+    }
+  ]
+}

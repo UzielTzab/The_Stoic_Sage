@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stoic_app/models/stoic_content.dart';
 import 'package:stoic_app/providers/favorite_lessons_provider.dart';
+import 'package:stoic_app/providers/glossary_provider.dart';
 import 'package:stoic_app/providers/lesson_progress_provider.dart';
 import 'package:stoic_app/providers/philosophers_provider.dart';
 import 'package:stoic_app/providers/stoic_content_provider.dart';
 import 'package:stoic_app/providers/theme_provider.dart';
+import 'package:stoic_app/screens/glossary_detail_screen.dart';
 import 'package:stoic_app/theme/app_text_styles.dart';
 import 'package:stoic_app/theme/app_colors.dart';
-import 'package:stoic_app/widgets/lesson_list_item.dart';
 import 'package:stoic_app/screens/lesson_detail_screen.dart';
+import 'package:stoic_app/widgets/lesson_list_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -163,8 +165,8 @@ class _HomeScreenState extends State<HomeScreen>
                                       color: Colors.transparent,
                                       borderRadius: BorderRadius.circular(6),
                                       border: Border.all(
-                                        color: context.dividerColor.withValues(
-                                          alpha: 0.3,
+                                        color: context.dividerColor.withOpacity(
+                                          0.3,
                                         ),
                                       ),
                                     ),
@@ -320,8 +322,8 @@ class _HomeScreenState extends State<HomeScreen>
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: context.dividerColor.withValues(
-                                alpha: 0.3,
+                              color: context.dividerColor.withOpacity(
+                                0.3,
                               ),
                             ),
                           ),
@@ -469,25 +471,82 @@ class _HomeScreenState extends State<HomeScreen>
           ),
 
           // Tab 3: Glosario
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.book, size: 64, color: context.textSecondary),
-                const SizedBox(height: 16),
-                Text(
-                  "Glosario",
-                  style: AppTextStyles.h3.copyWith(color: context.textPrimary),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Diccionario de términos estoicos",
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: context.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+          SafeArea(
+            child: Consumer<GlossaryProvider>(
+              builder: (context, glossaryProvider, child) {
+                if (glossaryProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (glossaryProvider.error != null) {
+                  return Center(
+                    child: Text(
+                      'Error: ${glossaryProvider.error}',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: context.textSecondary,
+                      ),
+                    ),
+                  );
+                }
+
+                final terms = glossaryProvider.terms;
+                if (terms.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.book, size: 64, color: context.textSecondary),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Glosario vacío",
+                          style: AppTextStyles.h3.copyWith(color: context.textPrimary),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "No hay términos disponibles",
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: context.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // Show a list of cards (first 8 items)
+                final display = terms.take(8).toList();
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: display.length,
+                  itemBuilder: (context, index) {
+                    final term = display[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        title: Text(term.term, style: AppTextStyles.h4.copyWith(color: context.textPrimary)),
+                        subtitle: Text(term.definition, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodySmall.copyWith(color: context.textSecondary)),
+                        trailing: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF6B35).withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(term.category, style: AppTextStyles.overline.copyWith(color: const Color(0xFFFF6B35))),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => GlossaryDetailScreen(term: term)),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
 
@@ -653,7 +712,7 @@ class _HomeScreenState extends State<HomeScreen>
           color: context.cardBackground,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),

@@ -5,6 +5,7 @@ import 'package:stoic_app/theme/app_text_styles.dart';
 import 'package:stoic_app/theme/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'dart:math';
 
 class ChatMessage {
   final String text;
@@ -31,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = false;
   late Map<String, String> _responses;
   bool _responsesLoaded = false;
+  String? _lastMatchedKey;
 
   @override
   void initState() {
@@ -83,14 +85,102 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String _getResponse(String userMessage) {
-    final lowerMessage = userMessage.toLowerCase();
-    for (var key in _responses.keys) {
-      if (lowerMessage.contains(key)) {
-        return _responses[key]!;
-      }
+    final lowerMessage = userMessage.toLowerCase().trim();
+
+    // If user asks a short follow-up, try to use last matched topic
+    if (_isFollowUp(lowerMessage) && _lastMatchedKey != null) {
+      return _responses[_lastMatchedKey!] ?? _defaultResponse();
     }
-    // Respuesta por defecto
+
+    // Score all keys and pick best matches
+    final scores = <String, int>{};
+    final userTokens = _tokenize(lowerMessage);
+
+    for (var key in _responses.keys) {
+      final lk = key.toLowerCase();
+      var score = 0;
+
+      // Exact whole-word match
+      if (_containsWholeWord(lowerMessage, lk)) score += 5;
+
+      // Substring match
+      if (lowerMessage.contains(lk)) score += 3;
+
+      // Token overlap
+      final keyTokens = _tokenize(lk);
+      var common = 0;
+      for (var t in keyTokens) if (userTokens.contains(t)) common++;
+      score += common; // small boost per common token
+
+      // Fuzzy match (Levenshtein distance)
+      final dist = _levenshtein(lowerMessage, lk);
+      final tolerance = (lk.length * 0.25).ceil();
+      if (dist <= max(1, tolerance)) score += 2;
+
+      if (score > 0) scores[key] = score;
+    }
+
+    if (scores.isNotEmpty) {
+      // Sort keys by score descending
+      final sorted = scores.keys.toList()
+        ..sort((a, b) => scores[b]!.compareTo(scores[a]!));
+
+      // Take top candidates with score near top
+      final topScore = scores[sorted.first]!;
+      final topKeys = sorted.where((k) => scores[k]! >= max(2, topScore - 2)).toList();
+
+      // Save last matched key for contextual follow-ups
+      _lastMatchedKey = topKeys.first;
+
+      // If multiple relevant keys, combine answers
+      final responses = topKeys.map((k) => _responses[k]!).toList();
+      return responses.join('\n\n');
+    }
+
+    return _defaultResponse();
+  }
+
+  String _defaultResponse() {
     return '🤔 Interesante pregunta. Puedo ayudarte mejor si preguntas sobre:\n• Conceptos estoicos\n• Filósofos (Zenón, Epicteto, Marco Aurelio, Séneca, Crisipo, Aristóteles)\n• Práctica diaria\n\nEscribe "ayuda" para ver más temas.';
+  }
+
+  bool _isFollowUp(String msg) {
+    final followUps = ['más', 'otra', 'explica', 'detalle', 'eso', 'también', 'y?', 'y', 'por favor', 'porfa'];
+    for (var f in followUps) if (msg.contains(f)) return true;
+    return false;
+  }
+
+  List<String> _tokenize(String s) {
+    return s
+        .replaceAll(RegExp(r"[^a-z0-9áéíóúñ ]"), ' ')
+        .split(RegExp(r"\s+"))
+        .where((t) => t.isNotEmpty)
+        .toList();
+  }
+
+  bool _containsWholeWord(String text, String word) {
+    return RegExp('\\b' + RegExp.escape(word) + '\\b').hasMatch(text);
+  }
+
+  int _levenshtein(String s, String t) {
+    if (s == t) return 0;
+    if (s.isEmpty) return t.length;
+    if (t.isEmpty) return s.length;
+
+    final v0 = List<int>.filled(t.length + 1, 0);
+    final v1 = List<int>.filled(t.length + 1, 0);
+
+    for (var i = 0; i <= t.length; i++) v0[i] = i;
+
+    for (var i = 0; i < s.length; i++) {
+      v1[0] = i + 1;
+      for (var j = 0; j < t.length; j++) {
+        final cost = s[i] == t[j] ? 0 : 1;
+        v1[j + 1] = [v1[j] + 1, v0[j + 1] + 1, v0[j] + cost].reduce((a, b) => a < b ? a : b);
+      }
+      for (var j = 0; j <= t.length; j++) v0[j] = v1[j];
+    }
+    return v1[t.length];
   }
 
   @override

@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stoic_app/providers/counter_provider.dart';
 import 'package:stoic_app/providers/favorite_lessons_provider.dart';
+import 'package:stoic_app/providers/glossary_provider.dart';
 import 'package:stoic_app/providers/lesson_progress_provider.dart';
 import 'package:stoic_app/providers/philosophers_provider.dart';
 import 'package:stoic_app/providers/stoic_content_provider.dart';
 import 'package:stoic_app/providers/theme_provider.dart';
 import 'package:stoic_app/theme/app_theme.dart';
 import 'package:stoic_app/screens/login_screen.dart';
-import 'package:stoic_app/screens/home_screen.dart';
 import 'package:stoic_app/screens/register_screen.dart';
+import 'package:stoic_app/screens/home_screen.dart';
 import 'package:stoic_app/screens/chat_screen.dart';
+import 'package:stoic_app/screens/glossary_screen.dart';
 
 void main() {
   runApp(App());
@@ -31,6 +33,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => CounterProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => StoicContentProvider()),
+        ChangeNotifierProvider(create: (context) => GlossaryProvider()),
         ChangeNotifierProvider(create: (context) => PhilosophersProvider()),
         ChangeNotifierProvider(create: (context) => LessonProgressProvider()),
         ChangeNotifierProvider(create: (context) => FavoriteLessonsProvider()),
@@ -54,6 +57,7 @@ class App extends StatelessWidget {
               "/register": (context) => const RegisterScreen(),
               "/login": (context) => const LoginScreen(),
               "/chat": (context) => const ChatScreen(),
+              "/glossary": (context) => const GlossaryScreen(),
             },
           );
         },
